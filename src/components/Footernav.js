@@ -7,7 +7,7 @@ import { graphql, useStaticQuery } from "gatsby"
 import UniversalLink from "../utils/UniversalLink"
 import { FlatListToHierarchical } from "../utils/FlatListToHierarchical"
 
-//import style from "./Footernav.module.css"
+import style from "../styles/layout/_Footernav.scss"
 
 const MenuFooterLoop = ({ menuItems }) => {
     return (
@@ -60,7 +60,6 @@ const Footernav = () => {
     console.log("footerMenu: ", footerMenu)
 
     return (
-        //<nav className={style.Mainnav}>
         <nav>
         {footerMenu.length > 0 && <MenuFooterLoop menuItems={footerMenu}></MenuFooterLoop>}
             </nav>
