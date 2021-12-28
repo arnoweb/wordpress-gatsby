@@ -1,15 +1,21 @@
 import React from 'react'
 import Helmet from 'react-helmet'
+//import {Lato} from "@fontsource/lato"
+//import { ArchivoBlack } from "@fontsource/archivo-black"
+
+import '../styles/main.scss'
 
 import Mainnav from "./Mainnav"
 import Footernav from "./Footernav"
-import '../styles/main.scss'
 
+
+import { CssBaseline } from '@mui/material'
 import {ThemeProvider, responsiveFontSizes, createTheme} from '@mui/material/styles';
 import {makeStyles} from "@mui/styles";
 //import { theme } from '../themes/theme'
 
-let theme = createTheme( {
+let theme = createTheme()
+theme = createTheme( theme ,{
     palette: {
         primary: {
             main: '#1de9b6',
@@ -25,14 +31,27 @@ let theme = createTheme( {
         },
     },
     typography: {
+        fontFamily: [
+            'Archivo Black',
+            'Roboto',
+            '"Helvetica Neue"',
+            'Arial',
+            'sans-serif',
+        ].join(','),
         h1: {
             color: '#FFFFFF'
         },
         h2: {
-            color: '#FFFFFF'
+            color: '#FFFFFF',
+            [theme.breakpoints.up("md")]: {
+                color: 'red',
+            }
         },
         h3: {
-            color: '#FFFFFF'
+            color: '#FFFFFF',
+            [theme.breakpoints.down('md')]: {
+                fontSize: '1.4rem',
+            },
         },
         subtitle1: {
             color: '#FFFFFF'
@@ -51,6 +70,18 @@ let theme = createTheme( {
         },
     },
     components:{
+        /*MuiCssBaseline: {
+            styleOverrides: `
+        @font-face {
+          font-family: 'Archivo Black';
+          font-style: normal;
+          font-display: swap;
+          font-weight: 400;
+          src: local('Archivo Black'), url(${ArchivoBlack}) format('woff2');
+          unicodeRange: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF;
+        }
+      `,
+        },*/
         MuiButton:{
             styleOverrides:{
                 root:{
@@ -83,6 +114,7 @@ const TemplateWrapper = ({ children }) => {
 
 return (
     <ThemeProvider theme={theme}>
+        <CssBaseline />
   <div>
     <Helmet title="Homepage" />
     <Mainnav />

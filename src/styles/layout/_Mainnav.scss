@@ -1,1 +1,21 @@
+.customDynamicToolbar{
+  margin-top: 3%;
+  justify-content: space-between;
 
+}
+
+.customDynamicToolbarReduced{
+  justify-content: space-between;
+  background-color: $theme-palette-primary-main;
+  transition-property: margin-top;
+  transition-duration: 0.3s;
+  transition-timing-function: linear;
+}
+
+.customDynamicToolbarReduced a:before{
+  background-color: #FFFFFF !important;
+}
+
+.customDynamicToolbarReduced a:after {
+  background-color: #FFFFFF !important;
+}

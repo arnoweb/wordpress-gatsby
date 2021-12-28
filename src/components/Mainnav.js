@@ -4,7 +4,6 @@
  */
 import React, { useState, useEffect } from "react"
 import { Link as RouterLink} from "gatsby"
-//import { Link as RouterLink } from "react-router-dom";
 import {
     AppBar,
     Toolbar,
@@ -19,7 +18,7 @@ import { makeStyles } from '@mui/styles'
 import MenuIcon from "@mui/icons-material/Menu"
 
 import { graphql, useStaticQuery } from "gatsby"
-import UniversalLink from "../utils/UniversalLink"
+import { UniversalLink } from "../utils/UniversalLink"
 import { FlatListToHierarchical } from "../utils/FlatListToHierarchical"
 
 //import style from "../styles/layout/_Mainnav.scss"
@@ -72,15 +71,8 @@ const useStyles = makeStyles(theme => ({
         },
     },
     appbar: {
-        [theme.breakpoints.up('md')]: {
-            top: "8% !important",
-        },
         backgroundColor:"transparent !important",
         boxShadow:"none !important",
-    },
-    toolbar: { //mobile
-        display: "flex",
-        justifyContent: "space-between",
     },
     drawerContainer: { //mobile
         padding: "20px 30px",
@@ -91,40 +83,71 @@ const useStyles = makeStyles(theme => ({
 
 const MenuLoop = ({ menuItems }) => {
 
-    const {logo, menuButton, appbar, toolbar, drawerContainer} = useStyles();
+    const {logo, menuButton, appbar, drawerContainer} = useStyles();
 
     const [state, setState] = useState({
         mobileView: false,
         drawerOpen: false,
     });
-
     const {mobileView, drawerOpen} = state;
 
+    const [toolbarStyled, setToolbarStyled] = React.useState('customDynamicToolbar');
+    const toolbarRef = React.useRef()
+    toolbarRef.current = toolbarStyled
+
     useEffect(() => {
+
         const setResponsiveness = () => {
             return window.innerWidth < 1080
                 ? setState((prevState) => ({...prevState, mobileView: true}))
                 : setState((prevState) => ({...prevState, mobileView: false}));
         };
-
         setResponsiveness();
-
         window.addEventListener("resize", () => setResponsiveness());
+
+        let scrollPosition = 0;
+
+        const pageHeight = document.body.offsetHeight;
+        console.log('main nav pageHeight', pageHeight)
+        const viewportHeight = window.innerHeight;
+        console.log('main nav viewportHeight', viewportHeight)
+
+        const handleScroll = () => {
+            const newScrollPosition = window.scrollY;
+            if (newScrollPosition > 100) {
+                console.log('main nav position:', 'ok')
+                setToolbarStyled('customDynamicToolbarReduced');
+                console.log('main nav toolbarStyled OK', toolbarRef.current)
+            } else{
+                console.log('main nav position:', 'ko')
+                setToolbarStyled('customDynamicToolbar');
+                console.log('main nav toolbarStyled KO', toolbarRef.current)
+            }
+
+            scrollPosition = newScrollPosition;
+
+
+            console.log('main nav scrollPosition', scrollPosition)
+            console.log('main nav newScrollPosition', newScrollPosition)
+        }
+        window.addEventListener('scroll', handleScroll, {passive: true});
+
+        //console.log('main nav display', appbarStyled)
 
         return () => {
             window.removeEventListener("resize", () => setResponsiveness());
+            window.removeEventListener('scroll', handleScroll);
         };
     }, []);//end useEffect
 
     //DESKTOP: display Toolbar with Buttons link
     const displayDesktop = () => {
         return (
-            <Toolbar className={toolbar}>
+            <Toolbar className={toolbarRef.current} >
                 {getLogo}
                 <div> {getMenuButtons()} </div>
             </Toolbar>
-    )
-        ;
+    );
     };//end displayDesktop
 
     // MOBILE
@@ -208,6 +231,7 @@ const MenuLoop = ({ menuItems }) => {
         <Typography variant = "h6" component = "h1" className={logo}>Le Club des Déraillés</Typography>
     );
 
+
     return(
             <AppBar className={appbar}>
                 {mobileView ? displayMobile() : displayDesktop()}
@@ -245,7 +269,7 @@ const Mainnav = () => {
         parentKey: "parent",
     })//end headerMenu
 
-    console.log("headerMenu: ", headerMenu)
+    //console.log("headerMenu: ", headerMenu)
 
     return (
         <div>

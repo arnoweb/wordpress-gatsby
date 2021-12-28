@@ -31,5 +31,6 @@ export const theme = createTheme( {
         button: {
             color: '#FFFFFF'
         }
-    }
+    },
+
 });
