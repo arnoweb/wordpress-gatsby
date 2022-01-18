@@ -3,7 +3,7 @@
  * @link https://www.wpgraphql.com/docs/menus/#hierarchical-data
  */
 import React, { useState, useEffect } from "react"
-import { Link as RouterLink} from "gatsby"
+import { Link as RouterLink, graphql, useStaticQuery} from "gatsby"
 import {
     AppBar,
     Toolbar,
@@ -13,11 +13,14 @@ import {
     SwipeableDrawer,
     Link,
     MenuItem,
+    keyframes,
 } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import MenuIcon from "@mui/icons-material/Menu"
+import CloseIcon from "@mui/icons-material/Close"
+import TrainIcon from "@mui/icons-material/Train"
+import Icon from '@mui/material/Icon'
 
-import { graphql, useStaticQuery } from "gatsby"
 import { UniversalLink } from "../utils/UniversalLink"
 import { FlatListToHierarchical } from "../utils/FlatListToHierarchical"
 
@@ -75,15 +78,51 @@ const useStyles = makeStyles(theme => ({
         boxShadow:"none !important",
     },
     drawerContainer: { //mobile
-        padding: "20px 30px",
+        padding: "5px 10px",
     },
+    mobileMenuLink: {
+        fontSize: '1.2rem !important',
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.0) !important',
+            fontSize: '1.2rem !important',
+        },
+        '&:before': {
+            position: "absolute",
+            left: "0.6rem",
+            top: "0.6rem",
+            content: "attr(filter-content)",
+            filter: "url(#motion-blur-filter)",
+        },
+        '&:hover::before':{
+           left: "0.6rem",
+        },
+    },
+    mobileMenuCloseIcon: {
+        '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.0) !important',
+        },
+    },
+    mobileMenuSvg: {
+        display: "none",
+    },
+
+
 }));
 
-
+const FxReveal = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateX(-200%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
 
 const MenuLoop = ({ menuItems }) => {
 
-    const {logo, menuButton, appbar, drawerContainer} = useStyles();
+    const {logo, menuButton, appbar, drawerContainer, mobileMenuLink, mobileMenuCloseIcon, mobileMenuSvg} = useStyles();
 
     const [state, setState] = useState({
         mobileView: false,
@@ -115,24 +154,15 @@ const MenuLoop = ({ menuItems }) => {
         const handleScroll = () => {
             const newScrollPosition = window.scrollY;
             if (newScrollPosition > 100) {
-                console.log('main nav position:', 'ok')
                 setToolbarStyled('customDynamicToolbarReduced');
-                console.log('main nav toolbarStyled OK', toolbarRef.current)
             } else{
-                console.log('main nav position:', 'ko')
                 setToolbarStyled('customDynamicToolbar');
-                console.log('main nav toolbarStyled KO', toolbarRef.current)
             }
 
             scrollPosition = newScrollPosition;
 
-
-            console.log('main nav scrollPosition', scrollPosition)
-            console.log('main nav newScrollPosition', newScrollPosition)
         }
         window.addEventListener('scroll', handleScroll, {passive: true});
-
-        //console.log('main nav display', appbarStyled)
 
         return () => {
             window.removeEventListener("resize", () => setResponsiveness());
@@ -152,11 +182,16 @@ const MenuLoop = ({ menuItems }) => {
 
     // MOBILE
     const displayMobile = () => {
-        const handleDrawerOpen = () =>
+        const handleDrawerOpen = () => {
             setState((prevState) => ({...prevState, drawerOpen: true}));
-        const handleDrawerClose = () =>
+            document.getElementById('main').style.filter = 'blur(3px)';
+            document.getElementById('main').style.transform = 'scale(0.9)';
+        }
+        const handleDrawerClose = () => {
             setState((prevState) => ({...prevState, drawerOpen: false}));
-
+            document.getElementById('main').style.filter = 'blur(0px)';
+            document.getElementById('main').style.transform = 'scale(1)';
+        }
         return (
             <Toolbar>
             <IconButton
@@ -173,12 +208,26 @@ const MenuLoop = ({ menuItems }) => {
 
             <SwipeableDrawer
                 {...{
-                anchor: "left",
+                    anchor: "left",
                     open:drawerOpen,
                     onClose:handleDrawerClose,
                 }}
             >
-                <div className={drawerContainer}>{ getDrawerChoices() }</div>
+                <div className={drawerContainer}>
+                    <IconButton
+                        {...{
+                        className: mobileMenuCloseIcon,
+                        edge: "close",
+                        color:"inherit",
+                        "aria-label":"fermer menu",
+                        "aria-haspopup":"true",
+                        onClick:handleDrawerClose,
+                        }}
+                    >
+                        <CloseIcon/>
+                    </IconButton>
+                    { getDrawerChoices() }
+                </div>
             </SwipeableDrawer>
 
             <div>{getLogo}</div>
@@ -191,18 +240,34 @@ const MenuLoop = ({ menuItems }) => {
 
         console.log("getDrawerChoice MenuItems: ", menuItems);
 
-        return menuItems.map(({label, path}) => {
+        return menuItems.map(({label, path, title}) => {
+            const MenuIcon = title;
             return (
                 <Link
                     {...{
                         component: RouterLink,
-                        to:path,
+                        to: path,
                         color:"inherit",
                         style:{textDecoration: "none"},
                         key: label,
                     }}
                 >
-                <MenuItem>{label}</MenuItem>
+                <MenuItem
+                    className={mobileMenuLink}
+                    filter-content="L"
+                    sx={{
+                        animation: `${FxReveal} 0.7s ease`
+                    }}
+                        >
+
+                <svg class={mobileMenuSvg} xmlns="http://www.w3.org/2000/svg">
+                    <filter id="motion-blur-filter" filterUnits="userSpaceOnUse">
+                        <feGaussianBlur stdDeviation="6 0"></feGaussianBlur>
+                    </filter>
+                </svg>
+
+                    {label}
+                </MenuItem>
                 </Link>
         );
         });
@@ -210,7 +275,7 @@ const MenuLoop = ({ menuItems }) => {
 
     //DESKTOP : Get items BUTTON label,path for Navigation
     const getMenuButtons = () => {
-        return menuItems.map(({label, path}) => {
+        return menuItems.map(({label, path, title}) => {
             return (
                 <Button
                     {...{
@@ -256,6 +321,7 @@ const Mainnav = () => {
           label
           path
           target
+          title
         }
       }
     }
@@ -269,7 +335,7 @@ const Mainnav = () => {
         parentKey: "parent",
     })//end headerMenu
 
-    //console.log("headerMenu: ", headerMenu)
+    console.log("headerMenu: ", headerMenu)
 
     return (
         <div>

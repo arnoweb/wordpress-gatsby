@@ -82,10 +82,25 @@ theme = createTheme( theme ,{
         }
       `,
         },*/
+        MuiPaper:{
+            styleOverrides:{
+                root:{
+                    backgroundColor: '#1de9b6',
+                    color: '#FFFFFF',
+                }
+            }
+        },
         MuiButton:{
             styleOverrides:{
                 root:{
 
+                }
+            }
+        },
+        MuiIconButton: {
+            root: {
+                '&:hover': {
+                    backgroundColor: '#1de9b6',
                 }
             }
         }
@@ -119,7 +134,7 @@ return (
     <Helmet title="Homepage" />
     <Mainnav />
     <main>
-        <div>{children}</div>
+        <div id="main">{children}</div>
     </main>
     <footer><Footernav /></footer>
   </div>

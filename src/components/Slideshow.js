@@ -68,7 +68,7 @@ const SlideshowLoop = ({ slideshowItems } ) => {
                 }}
             activeIndicatorIconButtonProps={{
                 style: {
-                    backgroundColor: 'transparent',
+                    color: theme.palette.primary.contrastText,
                 }
             }}
 

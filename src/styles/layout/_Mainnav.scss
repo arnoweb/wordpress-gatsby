@@ -8,8 +8,8 @@
   justify-content: space-between;
   background-color: $theme-palette-primary-main;
   transition-property: margin-top;
-  transition-duration: 0.3s;
-  transition-timing-function: linear;
+  transition-duration: 0.4s;
+  transition-timing-function: ease-out;
 }
 
 .customDynamicToolbarReduced a:before{
